@@ -1,0 +1,6 @@
+*.so
+*.o
+*.swp
+/tests
+/libnss_command.so
+/libnss_command.so.2
