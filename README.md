@@ -1,9 +1,12 @@
 libnss\_command
 ============
+Copyright (c) 2017 Jose Manuel Sanchez Madrid.
+This file is licensed under MIT license. See file LICENSE for details.
 
+## Overview
 libnss\_command is a [NSS (Name Service Switch)](https://en.wikipedia.org/wiki/Name_Service_Switch) module for host names resolution. It's objective is to delegate the name resolution to an external command that can be a custom program or script. The command will be executed in order to attend a host name resolution request.
 
-##Installation
+## Installation
 Compile the module and copy it in the _lib_ directory:
 ```
 make
@@ -35,7 +38,7 @@ libnss\_command expects the commands to be in the following paths:
 
 The commands to be executed can be changed by modifing the DEFAULT\_GETHOSTBYNAME\_COMMAND and DEFAULT\_GETHOSTBYADDR\_COMMAND constants in the nss\_command.cpp source code.
 
-##Writing custom commands
+## Writing custom commands
 Custom commands to manage name resolution can be written in any programming language as long as they are executable files, and they implement the following specifications:
  * nsscommand\_gethostbyname receives the host name to be resolved as the first command line argument.
  * nsscommand\_gethostbyaddr receives the ip addres to be resolved as the first command line argument.
@@ -45,7 +48,7 @@ Custom commands to manage name resolution can be written in any programming lang
     * A return code of _2_ indicates a temporary failure of name resolution and the client may try again.
     * A return code of _3_ indicates a no-recoverable failure of name resolution and the client should not continue trying.
     * A return code of _4_ indicates the host was found and it is valid, but there is no data for it.
- * When a host name is successfully resolved, the command must return code 0 from it execution and must return the host data by writing it to its standard output.
+ * When a host name is successfully resolved, the command must return code 0 from its execution and must provide the host data by writing it to its standard output.
     * Each line represents one field of the host entry information.
     * Each line must comply with this specific format `<type>:<data>`:
         * Each line must begin with a type
@@ -66,3 +69,4 @@ ip4: 192.168.0.1
 ip4: 192.168.0.2
 ```
 Sample scripts can be found in the resources directory.
+
