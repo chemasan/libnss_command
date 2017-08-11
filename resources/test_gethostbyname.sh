@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Copyright (c) 2017 Jose Manuel Sanchez Madrid.
+# This file is licensed under MIT license. See file LICENSE for details.
+
 function main()
 {
 	if [ $# -lt 1 ]

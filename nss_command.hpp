@@ -1,3 +1,8 @@
+/*
+ Copyright (c) 2017 Jose Manuel Sanchez Madrid.
+ This file is licensed under MIT license. See file LICENSE for details.
+*/
+
 #ifndef _NSSCOMMAND_H
 #define _NSSCOMMAND_H 1
 
