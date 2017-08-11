@@ -1,18 +1,19 @@
 .DEFAULT_GOAL:=libnss_command.so
 PREFIX:=/usr/local
 .PHONY: clean install uninstall test
+CXXFLAGS:=-std=c++11
 export LD_LIBRARY_PATH:=.
 
 libnss_command.so: nss_command.o
-	$(CC) -shared -o $@ -Wl,-soname,libnss_command.so.2 $^
+	$(CXX) -shared -o $@ -Wl,-soname,libnss_command.so.2 $^
 	rm -f libnss_command.so.2
 	ln -s $@ libnss_command.so.2
 
-nss_command.o: nss_command.c
-	$(CC) -fPIC -o $@ -c $<
+nss_command.o: nss_command.cpp
+	$(CXX) $(CXXFLAGS) -fPIC -o $@ -c $<
 
 tests: tests.o nss_command.o
-	$(CXX) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
 test: tests
 	./tests
