@@ -44,6 +44,7 @@ namespace nssCommand
 		vector<in_addr> addresses;
 	};
 
+	bool fileHasRightPerms(const string& filename);
 	HostEntry parseCommandOutput(const string& text);
 	int run(const string& cmd, string& output);
 	size_t calculateBufferSize(const HostEntry& entry);

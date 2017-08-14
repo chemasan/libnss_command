@@ -375,3 +375,33 @@ TEST_CASE("runNssCommandGethostbyname4 returns UNAVAILABLE when the command fail
 	REQUIRE( herror == NO_RECOVERY );
 	delete[] buffer;
 }
+TEST_CASE("fileHasRightPerms returns true if the given file is owned by root and has modes 755")
+{
+	const string filename = "/bin/ls";
+
+	CHECK( fileHasRightPerms(filename) );
+}
+TEST_CASE("fileHasRightPerms returns false if the given file is not owned by root")
+{
+	const string filename = "/tmp/mytestfile";
+
+	string output;
+	run("touch " + filename + "; chmod 755 "+ filename , output ); //I'm assuming this tests are running as non-root user
+	CHECK_FALSE( fileHasRightPerms(filename) );
+	run("rm -f " + filename , output );
+}
+TEST_CASE("fileHasRightPerms returns false if the given file modes are not 755")
+{
+	const string filename = "/tmp/mytestfile";
+
+	string output;
+	run("touch " + filename + "; chmod 775 "+ filename , output );
+	CHECK_FALSE( fileHasRightPerms(filename) );
+	run("rm -f " + filename , output );
+}
+TEST_CASE("fileHasRightPerms returns false if the given file can't be accessed")
+{
+	const string filename = "/somethingthatshouldnotexist";
+
+	CHECK_FALSE( fileHasRightPerms(filename) );
+}
