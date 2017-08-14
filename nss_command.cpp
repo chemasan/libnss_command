@@ -13,6 +13,9 @@
 #include <regex>
 #include <sstream>
 #include <iostream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 const char* DEFAULT_GETHOSTBYNAME_COMMAND = "/usr/local/sbin/nsscommand_gethostbyname";
 const char* DEFAULT_GETHOSTBYADDR_COMMAND = "/usr/local/sbin/nsscommand_gethostbyaddr";
@@ -27,6 +30,15 @@ bool operator == (const in_addr& lhs, const in_addr& rhs)
 
 namespace nssCommand
 {
+	bool fileHasRightPerms(const string& filename)
+	{
+		struct stat fileProperties;
+		int statResult = stat(filename.c_str(), &fileProperties);
+		if (statResult != 0)  return false;
+		if (fileProperties.st_mode != 0100755) 	return false;
+		if (fileProperties.st_uid != 0) return false;
+		return true;
+	}
 	const regex namere("^name:\\s*([a-zA-Z0-9\\-\\.]+)$");
 	const regex aliasre("^alias:\\s*([a-zA-Z0-9\\-\\.]+)$");
 	const regex ip4re("^ip4:\\s*([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)$");
@@ -243,33 +255,38 @@ namespace nssCommand
 	}
 }
 
-
+using namespace nssCommand;
 
 enum nss_status  _nss_command_gethostbyname_r(const char* name, struct hostent* result, char* buffer, size_t bufferSize, int* errnop, int* herrnop)
 {
+	if (! fileHasRightPerms(DEFAULT_GETHOSTBYNAME_COMMAND)) return notAvailableExit(errnop, herrnop);
 	return nssCommand::runNssCommandGethostbyname(name, result, buffer, bufferSize, errnop, herrnop, DEFAULT_GETHOSTBYNAME_COMMAND);
 }
 
 enum nss_status _nss_command_gethostbyname2_r(const char* name, int addressFamily, struct hostent* result, char* buffer, size_t bufferSize, int* errnop, int* herrnop)
 {
 	if (addressFamily != AF_INET) return nssCommand::notFoundExit(errnop, herrnop);
+	if (! fileHasRightPerms(DEFAULT_GETHOSTBYNAME_COMMAND)) return notAvailableExit(errnop, herrnop);
 	return nssCommand::runNssCommandGethostbyname(name, result, buffer, bufferSize, errnop, herrnop, DEFAULT_GETHOSTBYNAME_COMMAND);
 }
 
 enum nss_status _nss_command_gethostbyname3_r(const char* name, int addressFamily, struct hostent* result, char* buffer, size_t bufferSize, int* errnop, int* herrnop, int32_t* ttlp, char** canonp)
 {
 	if (addressFamily != AF_INET) return nssCommand::notFoundExit(errnop, herrnop);
+	if (! fileHasRightPerms(DEFAULT_GETHOSTBYNAME_COMMAND)) return notAvailableExit(errnop, herrnop);
 	nss_status ret = nssCommand::runNssCommandGethostbyname(name, result, buffer, bufferSize, errnop, herrnop, DEFAULT_GETHOSTBYNAME_COMMAND);
 	if (canonp != nullptr) *canonp = result->h_name;
 	return ret;
 }
 enum nss_status _nss_command_gethostbyname4_r(const char* name, struct gaih_addrtuple** pat, char* buffer, size_t bufferSize, int* errnop, int* herrnop, int32_t* ttlp)
 {
+	if (! fileHasRightPerms(DEFAULT_GETHOSTBYNAME_COMMAND)) return notAvailableExit(errnop, herrnop);
 	return nssCommand::runNssCommandGethostbyname4(name, pat, buffer, bufferSize, errnop, herrnop, ttlp, DEFAULT_GETHOSTBYNAME_COMMAND);
 }
 
 enum nss_status _nss_command_gethostbyaddr_r(const void* address, socklen_t addressSize, int addressFamily, struct hostent* result, char* buffer, size_t bufferSize, int* errnop, int* herrnop)
 {
+	if (! fileHasRightPerms(DEFAULT_GETHOSTBYADDR_COMMAND)) return notAvailableExit(errnop, herrnop);
 	return nssCommand::runNssCommandGethostbyaddr(address, addressSize, addressFamily, result, buffer, bufferSize, errnop, herrnop, DEFAULT_GETHOSTBYADDR_COMMAND);
 }
 
