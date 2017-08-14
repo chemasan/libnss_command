@@ -32,9 +32,11 @@ netgroup:       nis
 ```
 For more details on how to configure nsswitch.conf check the [GNU NSS documentation](http://www.gnu.org/software/libc/manual/html_node/NSS-Configuration-File.html#NSS-Configuration-File).
 
-libnss\_command expects the commands to be in the following paths:
+libnss\_command expects the commands to be executable files in the following paths:
  * `/usr/local/sbin/nsscommand_gethostbyname` will be executed passing a host name as the first command argument to resolve its IP addresses.
  * `/usr/local/sbin/nsscommand_gethostbyaddr` will be executed passing an IP address as the first command argument to resolve its host name.
+
+The owner of the executable files must be root, and permissions must be exactly 755 (rwxr-xr-x), otherwise libnss\_command will refuse to execute the files in order to prevent possible escalation of privileges.
 
 The commands to be executed can be changed by modifing the DEFAULT\_GETHOSTBYNAME\_COMMAND and DEFAULT\_GETHOSTBYADDR\_COMMAND constants in the nss\_command.cpp source code.
 
